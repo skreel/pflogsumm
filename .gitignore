@@ -6,3 +6,8 @@ config.cfg
 # Ignore logs and temporary files
 *.log
 *.tmp
+
+# Ignore vim files:
+*~
+*.swp
+*.swo
