@@ -975,8 +975,8 @@ printf " %6d%s  received\n", adj_int_units($msgsRcvd);
 printf " %6d%s  delivered\n", adj_int_units($msgsDlvrd);
 
 # added by Scott for queue reporting 1/29/25
-printf " %6d%s   via $syslogName\n", adj_int_units($msgsDlvrdSyslogName) if($syslogName ne "postfix");
-printf " %6d%s   via $syslogName2\n", adj_int_units($msgsDlvrdSyslogName2) if($syslogName2 ne "postfix");
+printf " %6d%s   └via $syslogName\n", adj_int_units($msgsDlvrdSyslogName) if($syslogName ne "postfix");
+printf " %6d%s   └via $syslogName2\n", adj_int_units($msgsDlvrdSyslogName2) if($syslogName2 ne "postfix");
 
 printf " %6d%s  forwarded\n", adj_int_units($msgsFwdd);
 printf " %6d%s  deferred", adj_int_units($msgsDfrd);
