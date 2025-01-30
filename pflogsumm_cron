@@ -9,4 +9,4 @@
 #
 test -x /usr/local/sbin/pflogsumm || exit 0
 
-/usr/local/sbin/pflogsumm -d yesterday --problems_first --syslog_name=postfix-slow --syslog_name2=postfix-bypass /var/log/mail.lo* | mail -a 'From: <server name> Daily Postfix Report <servername@domain.com>' -s "<servername> Relay Server - Daily Activity Report" email_to@domain.com
+/usr/local/sbin/pflogsumm -d yesterday --problems_first --syslog_name=postfix-slow --syslog_name2=postfix-bypass /var/log/mail.lo* | mail -a 'From: <server name> Daily Postfix Report <<servername>@<domain>.com>' -s "<servername> Relay Server - Daily Activity Report" <email_to>@<domain>.com
