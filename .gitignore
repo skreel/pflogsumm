@@ -1,0 +1,8 @@
+# Ignore API keys and configuration files
+*.env
+config.cfg
+.env
+
+# Ignore logs and temporary files
+*.log
+*.tmp
