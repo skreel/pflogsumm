@@ -463,7 +463,8 @@ my (
     %msgSizes,
     %deferred, %bounced,
     %noMsgSize, %msgDetail,
-    $msgsRcvd, $msgsDlvrd, $msgsDlvrdSyslogName, $msgsDlvrdSyslogName2, $msgsDlvrdSyslogName3, $sizeRcvd, $sizeDlvrd,
+    $msgsRcvd, $msgsDlvrd, $msgsDlvrdSyslogName, $msgsDlvrdSyslogName2, $msgsDlvrdSyslogName3,
+    $connClientSig, $sizeRcvd, $sizeDlvrd,
     $msgMonStr, $msgMon, $msgDay, $msgTimeStr, $msgHr, $msgMin, $msgSec,
     $msgYr,
     $revMsgDateStr, $dayCnt, %msgsPerDay,
@@ -483,6 +484,9 @@ $msgsDlvrd = $msgsRjctd = $msgsDscrdd = 0;
 
 # Added for reporting delivery count by syslog names for custom transport/queues
 $msgsDlvrdSyslogName = $msgsDlvrdSyslogName2 = $msgsDlvrdSyslogName3 = 0;
+
+# Added for reporting delivery count by client-signature (o365)
+$connClientSig = 0;
 
 # Init messages received and delivered per hour
 my @rcvPerHr = (0) x 24;
@@ -663,6 +667,8 @@ while(<>) {
 	next;
     }
     chomp;
+
+    #printf $logRmdr . "\n";
 
     # If the log line's month is greater than our current month,
     # we've probably had a year rollover
@@ -847,9 +853,15 @@ while(<>) {
 	    $addr = lc($addr) if($opts{'i'});
 	    $relay = lc($relay) if($opts{'i'});
 	    (my $domAddr = $addr) =~ s/^[^@]+\@//;	# get domain only
+
+
+
+	 
 	    if($status eq 'sent') {
 		
 		# added by Scott for queue reporting 1/29/25
+		#printf $logRmdr . "\n";
+
 		if($logRmdr =~ m"$syslogName/") {
 			#printf $syslogName;
 			++$msgsDlvrdSyslogName;
@@ -949,6 +961,16 @@ while(<>) {
 	    $rcvdMsg{$qid} = "pickup";	# Whence it came
 	}
 	elsif($cmd eq 'smtp' && $opts{'smtpDetail'} != 0) {
+            
+            # added 3/6/25 by Scott to count connections with client-signature, i.e. mutual auth to o365
+	    #printf $logRmdr . "\n";
+	    if($logRmdr =~ m"client-signature") {
+		#printf $logRmdr . "\n";
+            	++$connClientSig;
+            }
+            # end added 3/6/25
+
+
 	    # Was an IPv6 problem here
 	    if($logRmdr =~ /.* connect to (\S+?): ([^;]+); address \S+ port.*$/) {
 		++$smtpMsgs{lc($2)}{$1};
@@ -1000,6 +1022,8 @@ printf " %6d%s  rejected (%d%%)\n", adj_int_units($msgsRjctd), $msgsRjctdPct;
 printf " %6d%s  reject warnings\n", adj_int_units($msgsWrnd);
 printf " %6d%s  held\n", adj_int_units($msgsHld);
 printf " %6d%s  discarded (%d%%)\n", adj_int_units($msgsDscrdd), $msgsDscrddPct;
+print "\n";
+printf " %6d%s  connections w/ client-signature\n", adj_int_units($connClientSig);
 print "\n";
 printf " %6d%s  bytes received\n", adj_int_units($sizeRcvd);
 printf " %6d%s  bytes delivered\n", adj_int_units($sizeDlvrd);
